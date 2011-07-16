@@ -1,0 +1,30 @@
+<html>
+  <title>Pvk</title>
+  <head>
+    <script src='/_ah/channel/jsapi'></script>
+    <script type="text/javascript" src="/static/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="/static/client.js"></script>
+    <script type='text/javascript'>
+      var state = {
+        board_id: '{{ board_id }}',
+        token: '{{ token }}',
+      };
+    </script>
+  </head>
+  <body>
+    <div id="header">
+      {% include 'header.html' %}
+    </div>
+    <div id="start_game">
+      {% include 'start_new_game.html' %}
+    </div>
+
+    <!-- <div id="join_game" style="display:None"> -->
+    <!--   join existing game -->
+    <!-- </div> -->
+
+    <div id="board">
+      {% include 'board.html' %}
+    </div>
+  </body>
+</html>
