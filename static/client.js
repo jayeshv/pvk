@@ -3,19 +3,20 @@ $(document).ready(function() {
 	showCreateNewBoard();
     }
     else {
+	openChannel();
 	showBoard();
     }
 });
 
 showCreateNewBoard = function() {
     $('#header').show();
-    $('#start_new_game').show();
+    $('#start_game').show();
     $('#board').hide();
 }
 
 showBoard = function() {
     $('#header').show();
-    $('#start_new_game').hide();
+    $('#start_game').hide();
     showPlayArea();
 }
 
@@ -35,19 +36,29 @@ showPlayArea = function() {
     	    cxt.fill();
     	}
     }
+    $("#myCanvas").click(function() {
+	strike();
+    });
+}
+
+strike = function() {
+    $.post('/strike', {'board': state.board_id},
+	   function (data) {
+	   });
 }
 
 createNewBoard = function(dimension) {
     $.post('/new', {'dimension': dimension},
 	   function (data) {
+	       alert(data);
                state = JSON.parse(data);
-	       showBoard()
+	       openChannel();
+	       showBoard();
 	   });
 }
 
 openChannel = function() {
-    var token = state.token;
-    var channel = new goog.appengine.Channel(token);
+    var channel = new goog.appengine.Channel(state.token);
     var handler = {
         'onopen': onOpened,
         'onmessage': onMessage,
@@ -63,4 +74,5 @@ onOpened = function() {
 };
 
 onMessage = function(m) {
+    alert("message");
 };

@@ -12,14 +12,18 @@ class MainPage(webapp.RequestHandler):
 
     @login_required
     def get(self):
-        board_id = self.request.get('game')
+        board_id = self.request.get('board')
+        token = ''
         user = users.get_current_user()
         if board_id:
-            board = Board.get_by_id(board_id)
+            board = Board.get_by_id(int(board_id))
             if board:
-                token = create_channel(str(board.key().id()) + user.user_id())
-                raise NameError, token
+                if board.may_join(user):
+                    token = create_channel(str(board.key().id()) + user.user_id())
+                else:
+                    self.redirect('/')
             else:
-                pass
+                self.redirect('/')
         path = os.path.join('templates', 'pvk.html')
-        self.response.out.write(template.render(path, {}))
+        self.response.out.write(template.render(path, {'token': token,
+                                                       'board_id': board_id}))

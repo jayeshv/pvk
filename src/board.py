@@ -5,7 +5,10 @@ class Board(db.Model):
     player1 = db.UserProperty()
     player2 = db.UserProperty()
 
-    def __init__(self, user, dimension=10):
-        super(Board, self).__init__()
-        self.player1 = user
-        self.dimension = dimension
+    def may_join(self, user):
+        if self.player2:
+            return False
+        else:
+            self.player2 = user
+            self.put()
+        return True
