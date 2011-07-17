@@ -4,6 +4,7 @@ from google.appengine.api import channel
 from django.utils import simplejson
 
 from src import get_board_from_request
+from src import get_other_player_channel_key
 
 class Strike(webapp.RequestHandler):
 
@@ -11,8 +12,5 @@ class Strike(webapp.RequestHandler):
         user = users.get_current_user()
         board = get_board_from_request(self.request)
         #do board action
-        channel_key1 = str(board.key().id()) + board.player1.user_id()
-        channel_key2 = str(board.key().id()) + board.player2.user_id()
-        channel.send_message(channel_key1, simplejson.dumps(''))
-        channel.send_message(channel_key2, simplejson.dumps(''))
-        
+        key = get_other_player_channel_key(board, user)
+        channel.send_message(key, simplejson.dumps({'type': 'update'}))

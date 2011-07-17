@@ -5,9 +5,13 @@
     <script type="text/javascript" src="/static/jquery-1.6.2.min.js"></script>
     <script type="text/javascript" src="/static/client.js"></script>
     <script type='text/javascript'>
-      var state = {
-        token: '{{ token }}',
+      var board = {
         board_id: '{{ board_id }}',
+        dimension: 10,
+        token: '{{ token }}',
+        me: '{{ my_user_id }}',
+        other_player: '{{ other_player_id }}',
+        myturn: false
       };
     </script>
   </head>
