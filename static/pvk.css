@@ -1,0 +1,42 @@
+html {
+    width: 70%;
+    height: 100%;
+    margin: auto;
+    border-left: 1px solid;
+    border-right: 1px solid;
+}
+
+#header
+{
+    height: 50px;
+    background-color: #638099;
+}
+
+.title 
+{
+    font-size: 35px;
+    padding-top: 10px;
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.link 
+{
+    float:right;
+    padding-top: 15px;
+    padding-right: 10px;
+    font-size: 15px;
+    color: blue;
+    text-decoration: none;
+}
+
+#board {
+    background-color: #780000;
+    width: 60%;
+    margin: auto;
+    padding: 50px;
+}
+
+#myCanvas {
+    margin: auto;
+}

@@ -23,23 +23,23 @@ showBoard = function() {
 showPlayArea = function() {
     $("#board").show();
     if(!board.other_player) {
-	$("#wait_for_player").show();
-	$("#your_move").hide();
-	$("#opponend_move").hide();
+	$("#players").show();
+	// $("#your_move").hide();
+	// $("#opponend_move").hide();
     }
     else {
-	$("#wait_for_player").hide();
+	$("#players").hide();
     }
     if(board.myturn) {
-	$("#wait_for_player").hide();
-	$("#your_move").show();
+	$("#players").hide();
+	// $("#your_move").show();
 	$("#won_game").hide();
 	$("#lost_game").hide();
-	$("#opponend_move").hide();
+	// $("#opponend_move").hide();
 	showClickableBoard();
     }
     else {
-	$("#wait_for_player").show();
+	$("#players").show();
 	$("#your_move").hide();
 	$("#won_game").hide();
 	$("#lost_game").hide();
