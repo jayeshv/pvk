@@ -30,13 +30,20 @@ html {
     text-decoration: none;
 }
 
-#board {
-    width: 60%;
+#plyers
+{
+    height: 60px;
+}
+
+#board 
+{
+    width: 50%;
     margin: auto;
     padding: 50px;
 }
 
-#myCanvas {
+#myCanvas 
+{
     background-color: #FFB6C1;
     margin: auto;
     box-shadow: -10px -10px 5px #888;

@@ -63,18 +63,19 @@ showReadonlyaBoard = function() {
 drawBoard = function() {
     var board_width = $("#board").width();
     var boardCanvas = $("#myCanvas")[0];
-    alert(board_width);
-    $("#myCanvas").width(board_width);
-    $("#myCanvas").height(board_width);
+    boardCanvas.setAttribute('width', board_width);
+    boardCanvas.setAttribute('height', board_width);
     var cxt = boardCanvas.getContext("2d");
     cxt.fillStyle = "#000";
     var i;
     var j;
+    var spacing = board_width * 0.0904;
+    var radious = board_width * 0.0301;
     for(i=1; i<=board.dimension; i++) 
     {
     	for(j=1; j<=board.dimension; j++) {
     	    cxt.beginPath();
-    	    cxt.arc(i*60, j*60, 20, 0, Math.PI*2, true);
+    	    cxt.arc(i*spacing, j*spacing, radious, radious, Math.PI*2, true);
     	    cxt.closePath();
     	    cxt.fill();
     	}
