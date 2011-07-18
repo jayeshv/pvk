@@ -48,7 +48,7 @@ showPlayArea = function() {
     }
 }
 
-showClickableBoard = function() {
+showClickableBoard = function() {    
     var boardCanvas = $("#myCanvas")[0];
     //boardCanvas.disabled = false;  
     drawBoard();
@@ -61,7 +61,11 @@ showReadonlyaBoard = function() {
 }
 
 drawBoard = function() {
+    var board_width = $("#board").width();
     var boardCanvas = $("#myCanvas")[0];
+    alert(board_width);
+    $("#myCanvas").width(board_width);
+    $("#myCanvas").height(board_width);
     var cxt = boardCanvas.getContext("2d");
     cxt.fillStyle = "#000";
     var i;
