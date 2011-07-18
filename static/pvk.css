@@ -2,8 +2,8 @@ html {
     width: 70%;
     height: 100%;
     margin: auto;
-    border-left: 1px solid;
-    border-right: 1px solid;
+    /* border-left: 1px solid; */
+    /* border-right: 1px solid; */
 }
 
 #header
@@ -32,7 +32,9 @@ html {
 
 #plyers
 {
-    height: 60px;
+    height: 100px;
+    width: 50%;
+    margin: auto;
 }
 
 #board 
@@ -47,4 +49,20 @@ html {
     background-color: #FFB6C1;
     margin: auto;
     box-shadow: -10px -10px 5px #888;
+}
+
+#meavatar 
+{
+    float: left;
+    width: 60px;
+    height: 60px;
+    background-image:url('http://www.gravatar.com/avatar/0b5532ff8ee2fad489f860b66b4d348b?s=60');
+}
+
+#otheravatar 
+{
+    margin-left: 200px;
+    width: 60px;
+    height: 60px;
+    background-image:url('http://www.gravatar.com/avatar/0b5532ff8ee2fad489f860b66b4d348b?s=60');
 }
