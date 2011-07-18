@@ -1,9 +1,26 @@
-html {
+body {
     width: 70%;
     height: 100%;
     margin: auto;
     /* border-left: 1px solid; */
     /* border-right: 1px solid; */
+}
+
+#followme
+{
+    position:absolute;
+    left:0;
+    top:0;
+    height: 200px;
+    width: 200px;
+    background-image:url('/static/images/badge.png');
+    background-repeat:no-repeat;
+}
+
+#board_url
+{
+    height: 200px;
+    width: 200px;
 }
 
 #header

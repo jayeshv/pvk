@@ -10,12 +10,14 @@ $(document).ready(function() {
 
 showCreateNewBoard = function() {
     $('#header').show();
+    $('#board_url').hide();
     $('#start_game').show();
     $('#board').hide();
 }
 
 showBoard = function() {
     $('#header').show();
+    $('#board_url').hide();
     $('#start_game').hide();
     showPlayArea();
 }
@@ -99,7 +101,8 @@ createNewBoard = function(dimension) {
     board.dimension = dimension;
     $.post('/new', {'dimension': dimension},
 	   function (data) {
-	       alert(data);
+	       $('#board_url').show();	       
+	       //$('#board_url').html("new url!");
                newBoard = JSON.parse(data);
 	       board.token = newBoard.token;
 	       board.board_id = newBoard.board_id;
@@ -109,6 +112,7 @@ createNewBoard = function(dimension) {
 }
 
 playerJoined = function(user) {
+    $('#board_url').hide();
     board.other_player = user.id;
     board.myturn = true;
     showPlayArea();
