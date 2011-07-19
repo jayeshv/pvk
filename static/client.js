@@ -4,20 +4,19 @@ $(document).ready(function() {
     }
     else {
 	openChannel();
+	$('#board_url').hide();
 	showBoard();
     }
 });
 
 showCreateNewBoard = function() {
     $('#header').show();
-    //$('#board_url').hide();
     $('#start_game').show();
     $('#board').hide();
 }
 
 showBoard = function() {
     $('#header').show();
-    //$('#board_url').hide();
     $('#start_game').hide();
     showPlayArea();
 }
@@ -72,7 +71,7 @@ drawBoard = function() {
     var i;
     var j;
     var spacing = board_width * 0.0904;
-    var radious = board_width * 0.0301;
+    var radious = board_width * 0.0201;
     for(i=1; i<=board.dimension; i++) 
     {
     	for(j=1; j<=board.dimension; j++) {
@@ -101,9 +100,9 @@ createNewBoard = function(dimension) {
     board.dimension = dimension;
     $.post('/new', {'dimension': dimension},
 	   function (data) {
+	       newBoard = JSON.parse(data);	       
 	       $('#board_url').show();
-	       //$('#board_url').html("new url!");
-               newBoard = JSON.parse(data);
+	       $('#board_url').html("Share this url: http://pvk.jayeshv.info?board=" + newBoard.board_id);
 	       board.token = newBoard.token;
 	       board.board_id = newBoard.board_id;
 	       openChannel();
@@ -112,7 +111,7 @@ createNewBoard = function(dimension) {
 }
 
 playerJoined = function(user) {
-    //$('#board_url').hide();
+    $('#board_url').hide();
     board.other_player = user.id;
     board.myturn = true;
     showPlayArea();
