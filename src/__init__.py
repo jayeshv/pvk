@@ -1,5 +1,6 @@
 import urllib, hashlib
 
+from django.utils import simplejson
 from google.appengine.api import channel
 
 from src.board import Board
@@ -19,5 +20,21 @@ def get_other_player_channel_key(board, user):
     else:
         return str(board.key().id()) + board.player1.user_id()
 
-def get_gravatar_url(email):
-    pass
+def get_user_dump(user, format='json'):
+    if user:
+        avatar = get_gravatar_url(user.email())
+        if format == 'dict':
+            return {'id': user.user_id(), 'name': user.nickname(), 'avatar': avatar}
+        elif format == 'json':
+            return simplejson.dumps({'id': user.user_id(), 'name': user.nickname(), 'avatar': avatar})
+    return None
+
+def get_gravatar_url(email, size=60):
+    email = 'jayesh.mail@gmail.com'
+    default = "http://example.com/avatar.png"
+    gravatar_url = "http://www.gravatar.com/avatar.php?"
+    gravatar_url += urllib.urlencode({
+        'gravatar_id':hashlib.md5(email.lower()).hexdigest(),
+        'default':default, 'size':str(size)
+    })
+    return gravatar_url

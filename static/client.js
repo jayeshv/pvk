@@ -1,13 +1,17 @@
 $(document).ready(function() {
+    board.me = JSON.parse(board.me)
     if(!board.board_id) {
 	showCreateNewBoard();
     }
     else {
+	board.other_player = JSON.parse(board.other_player)
 	openChannel();
 	$('#board_url').hide();
 	board.i_am_player1 = false;
 	board.myturn = false;
 	$('#player1').addClass('player active');
+	$('#player1').css('background-image', 'url("' + board.other_player.avatar + '")');
+	$('#player2').css('background-image', 'url("' + board.me.avatar + '")');
 	$('#player2').addClass('player player2');
 	showBoard();
     }
@@ -121,6 +125,7 @@ createNewBoard = function(dimension) {
 	       board.token = newBoard.token;
 	       board.i_am_player1 = true;
 	       $('#player1').addClass("player");
+	       $('#player1').css('background-image', 'url("' + board.me.avatar + '")');
 	       $('#player2').addClass("waiting");
 	       board.board_id = newBoard.board_id;
 	       openChannel();
@@ -129,10 +134,11 @@ createNewBoard = function(dimension) {
 }
 
 playerJoined = function(user) {
+    board.other_player = user;
     $('#board_url').hide();
-    board.other_player = user.id;
     board.myturn = true;
     $('#player2').addClass("player player2");
+    $('#player2').css('background-image', 'url("' + board.other_player.avatar + '")');
     $('#player1').addClass("active");
     showPlayArea();
 }

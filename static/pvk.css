@@ -82,7 +82,7 @@ body {
     width: 60px;
     height: 60px;
     /* border: 1px solid; */
-    background-image:url('http://www.gravatar.com/avatar/0b5532ff8ee2fad489f860b66b4d348b?s=60');
+    /* background-image:url('http://www.gravatar.com/avatar/0b5532ff8ee2fad489f860b66b4d348b?s=60'); */
     background-repeat:no-repeat;
     /* box-shadow: -2px -2px 5px #888; *\/ */
 }
