@@ -86,7 +86,9 @@ drawBoard = function() {
     	}
     }
     $("#myCanvas").click(function() {
-	strike();
+	if(board.myturn) {
+	    strike();
+	}
     });
 }
 
