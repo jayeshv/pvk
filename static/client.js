@@ -142,6 +142,7 @@ playerJoined = function(user) {
     $('#board_url').hide();
     board.myturn = true;
     $('#player2').addClass("player player2");
+    $('#player2').removeClass("waiting");
     $('#player2').css('background-image', 'url("' + board.other_player.avatar + '")');
     $('#player2').html(board.other_player.name);
     $('#player1').addClass("active");

@@ -30,7 +30,7 @@ def get_user_dump(user, format='json'):
     return None
 
 def get_gravatar_url(email, size=60):
-    default = "http://example.com/avatar.png"
+    default = "http://www.gravatar.com/avatar/0?s=60"
     gravatar_url = "http://www.gravatar.com/avatar.php?"
     gravatar_url += urllib.urlencode({
         'gravatar_id':hashlib.md5(email.lower()).hexdigest(),
