@@ -5,6 +5,10 @@ $(document).ready(function() {
     else {
 	openChannel();
 	$('#board_url').hide();
+	board.i_am_player1 = false;
+	board.myturn = false;
+	$('#player1').addClass('player active');
+	$('#player2').addClass('player player2');
 	showBoard();
     }
 });
@@ -92,6 +96,15 @@ strike = function() {
 	showPlayArea();
 	$.post('/strike', {'board': board.board_id},
 	       function (data) {
+		   board.myturn = false;
+		   if(board.i_am_player1) {
+		       $('#player1').removeClass('active');
+		       $('#player2').addClass('active');  
+		   }
+		   else {
+		       $('#player2').removeClass('active');
+		       $('#player1').addClass('active');
+		   }
 	       });
     }
 }
@@ -102,8 +115,11 @@ createNewBoard = function(dimension) {
 	   function (data) {
 	       newBoard = JSON.parse(data);	       
 	       $('#board_url').show();
-	       $('#board_url').html("Share this url: http://pvk.jayeshv.info?board=" + newBoard.board_id);
+	       $('#board_url').html("Share this url: <span class=\"url\">http://pvk.jayeshv.info?board=" + newBoard.board_id + "</span>");
 	       board.token = newBoard.token;
+	       board.i_am_player1 = true;
+	       $('#player1').addClass("player");
+	       $('#player2').addClass("waiting");
 	       board.board_id = newBoard.board_id;
 	       openChannel();
 	       showBoard();
@@ -114,11 +130,21 @@ playerJoined = function(user) {
     $('#board_url').hide();
     board.other_player = user.id;
     board.myturn = true;
+    $('#player2').addClass("player player2");
+    $('#player1').addClass("active");
     showPlayArea();
 }
 
 updateReceived = function(data) {
     board.myturn = true;
+    if(board.i_am_player1) {
+	$('#player2').removeClass('active');
+	$('#player1').addClass('active');  
+    }
+    else {
+	$('#player1').removeClass('active');
+	$('#player2').addClass('active');
+    }
     showPlayArea();
 }
 
