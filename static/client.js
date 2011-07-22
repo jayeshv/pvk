@@ -1,4 +1,17 @@
+var board_width;
+var boardCanvas;
+var cxt;
+var spacing;
+var radius;
+var poojyams;
+
+var activeColor = {
+    'me': "#C40D0D",
+    'other': "#0909C4"
+}
+
 $(document).ready(function() {
+    setViewParams();
     board.me = JSON.parse(board.me)
     if(!board.board_id) {
 	showCreateNewBoard();
@@ -19,6 +32,50 @@ $(document).ready(function() {
 	showBoard();
     }
 });
+
+setViewParams = function() {
+    board_width = $("#board").width();
+    boardCanvas = $("#myCanvas")[0];
+    cxt = boardCanvas.getContext("2d");
+    spacing = board_width * 0.0904;
+    radious = board_width * 0.0201;
+}
+
+poojyam = function(row, column) {
+    this.row = row;
+    this.column = column;
+    this.draw = draw;
+    this.isMyRegion = isMyRegion;
+}
+
+draw = function(active, user) {
+    cxt.fillStyle = "#000";
+    if(active) {
+	if(active) {
+	    cxt.fillStyle = activeColor[user];
+	}
+	else {
+	    cxt.fillStyle = activeColor.player2;
+	}
+    }
+    cxt.beginPath();
+    cxt.arc(this.row*spacing, this.column*spacing, radious, radious, Math.PI*2, true);
+    cxt.closePath();
+    cxt.fill();
+}
+
+isMyRegion = function(x, y) {
+    if(x >= this.row*spacing - radious && x <= this.row*spacing + radious) {
+	if(y >= this.column*spacing - radious && y <= this.column*spacing + radious) {
+	    return true;
+	}
+    }
+    return false;
+}
+
+getPoojyam = function(row, column){
+    return 
+}
 
 showCreateNewBoard = function() {
     $('#header').show();
@@ -62,60 +119,64 @@ showPlayArea = function() {
 
 showClickableBoard = function() {    
     var boardCanvas = $("#myCanvas")[0];
-    //boardCanvas.disabled = false;  
     drawBoard();
 }
 
 showReadonlyaBoard = function() {
     var boardCanvas = $("#myCanvas")[0];
-    //boardCanvas.disabled = true;    
     drawBoard();
 }
 
 drawBoard = function() {
-    var board_width = $("#board").width();
-    var boardCanvas = $("#myCanvas")[0];
+    board_width = $("#board").width();
     boardCanvas.setAttribute('width', board_width);
     boardCanvas.setAttribute('height', board_width);
-    var cxt = boardCanvas.getContext("2d");
-    cxt.fillStyle = "#000";
     var i;
     var j;
-    var spacing = board_width * 0.0904;
-    var radious = board_width * 0.0201;
+    poojyams = new Array(board.dimension);
     for(i=1; i<=board.dimension; i++) 
     {
+	poojyams[i] = new Array(board.dimension);
     	for(j=1; j<=board.dimension; j++) {
-    	    cxt.beginPath();
-    	    cxt.arc(i*spacing, j*spacing, radious, radious, Math.PI*2, true);
-    	    cxt.closePath();
-    	    cxt.fill();
+	    var this_poojyam = new poojyam(i, j);
+	    poojyams[i][j] = this_poojyam;
+	    this_poojyam.draw(false, '');
     	}
     }
-    $("#myCanvas").click(function() {
+    var canvasElement = $("#myCanvas");
+    canvasElement.click(function(e) {
 	if(board.myturn) {
-	    strike();
+	    xpos = e.clientX - canvasElement.position().left;
+	    ypos = e.clientY - canvasElement.position().top;
+	    for(i=1; i<=board.dimension; i++) 
+	    {
+    		for(j=1; j<=board.dimension; j++) {
+		    if(poojyams[i][j].isMyRegion(xpos, ypos)) {
+			strike(i, j);
+		    }
+    		}
+	    }
 	}
     });
 }
 
-strike = function() {
-    if(board.myturn) {
-	board.myturn = false;
-	showPlayArea();
-	$.post('/strike', {'board': board.board_id},
-	       function (data) {
-		   board.myturn = false;
-		   if(board.i_am_player1) {
-		       $('#player1').removeClass('active');
-		       $('#player2').addClass('active');  
-		   }
-		   else {
-		       $('#player2').removeClass('active');
-		       $('#player1').addClass('active');
-		   }
-	       });
-    }
+strike = function(i, j) {
+    board.myturn = false;
+    //showPlayArea();
+    var poojyam = poojyams[i][j];
+    poojyam.draw(true, 'me');
+    $.post('/strike', {'board': board.board_id, 'xvalue': i, 'yvalue': j},
+	   function (data) {
+	       board.myturn = false;
+	       if(board.i_am_player1) {
+		   $('#player1').removeClass('active');
+		   $('#player2').addClass('active');
+	       }
+	       else {
+		   $('#player2').removeClass('active');
+		   $('#player1').addClass('active');
+	       }
+	   });
 }
 
 createNewBoard = function(dimension) {
@@ -159,7 +220,9 @@ updateReceived = function(data) {
 	$('#player1').removeClass('active');
 	$('#player2').addClass('active');
     }
-    showPlayArea();
+    //showPlayArea();
+    updated_poojyam = poojyams[data[0]][data[1]]
+    updated_poojyam.draw(true, 'other');
 }
 
 openChannel = function() {

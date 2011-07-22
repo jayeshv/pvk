@@ -26,7 +26,6 @@ class MainPage(webapp.RequestHandler):
                 if board.may_join(user):
                     token = create_channel(str(board.key().id()) + user.user_id())
                     other_player = board.player1
-                    #push to player1 as join and turn as true (id, name, gravatar)
                     key = get_other_player_channel_key(board, user)
                     channel.send_message(key, simplejson.dumps({'type':'join', 'user':get_user_dump(user, format='dict')}))
                 else:
