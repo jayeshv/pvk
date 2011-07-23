@@ -1,9 +1,10 @@
-var board_width;
+var boardWidth;
 var boardCanvas;
 var cxt;
 var spacing;
 var radius;
 var poojyams;
+var activePoojyam;
 
 var activeColor = {
     'me': "#C40D0D",
@@ -34,11 +35,11 @@ $(document).ready(function() {
 });
 
 setViewParams = function() {
-    board_width = $("#board").width();
+    boardWidth = $("#board").width();
     boardCanvas = $("#myCanvas")[0];
     cxt = boardCanvas.getContext("2d");
-    spacing = board_width * 0.0904;
-    radious = board_width * 0.0201;
+    spacing = boardWidth * 0.0904;
+    radious = boardWidth * 0.0201;
 }
 
 poojyam = function(row, column) {
@@ -71,10 +72,6 @@ isMyRegion = function(x, y) {
 	}
     }
     return false;
-}
-
-getPoojyam = function(row, column){
-    return 
 }
 
 showCreateNewBoard = function() {
@@ -128,9 +125,9 @@ showReadonlyaBoard = function() {
 }
 
 drawBoard = function() {
-    board_width = $("#board").width();
-    boardCanvas.setAttribute('width', board_width);
-    boardCanvas.setAttribute('height', board_width);
+    boardWidth = $("#board").width();
+    boardCanvas.setAttribute('width', boardWidth);
+    boardCanvas.setAttribute('height', boardWidth);
     var i;
     var j;
     poojyams = new Array(board.dimension);
@@ -152,7 +149,7 @@ drawBoard = function() {
 	    {
     		for(j=1; j<=board.dimension; j++) {
 		    if(poojyams[i][j].isMyRegion(xpos, ypos)) {
-			strike(i, j);
+			poojyamClicked(poojyams[i][j])
 		    }
     		}
 	    }
@@ -160,12 +157,40 @@ drawBoard = function() {
     });
 }
 
-strike = function(i, j) {
+poojyamClicked = function(selected) {
+    if(activePoojyam) {
+	activePoojyam.draw(false, '');
+	if(checkProximity(selected, activePoojyam)) {
+	    drawLine(activePoojyam, selected);
+	    sendStrike(activePoojyam, selected);
+	    activePoojyam = null;
+	}
+	else {
+	    activePoojyam = selected;
+	    selected.draw(true, 'me');
+	}
+    }
+    else {
+	activePoojyam = selected;
+	selected.draw(true, 'me')
+    }
+}
+
+checkProximity = function(selected, active) {
+    return true;
+}
+
+drawLine = function(from, to) {
+    cxt.moveTo(from.row * spacing, from.column * spacing);
+    cxt.lineTo(to.row * spacing, to.column * spacing);
+    cxt.stroke();
+}
+
+sendStrike = function(from, to) {
     board.myturn = false;
     //showPlayArea();
-    var poojyam = poojyams[i][j];
-    poojyam.draw(true, 'me');
-    $.post('/strike', {'board': board.board_id, 'xvalue': i, 'yvalue': j},
+    var postData = JSON.stringify({'board': board.board_id, 'line_from': [from.row, from.column], 'line_to': [to.row, to.column]}, '');
+    $.post('/strike', {'update': postData},
 	   function (data) {
 	       board.myturn = false;
 	       if(board.i_am_player1) {
@@ -207,7 +232,7 @@ playerJoined = function(user) {
     $('#player2').css('background-image', 'url("' + board.other_player.avatar + '")');
     $('#player2').html(board.other_player.name);
     $('#player1').addClass("active");
-    showPlayArea();
+    //showPlayArea();
 }
 
 updateReceived = function(data) {
@@ -221,8 +246,12 @@ updateReceived = function(data) {
 	$('#player2').addClass('active');
     }
     //showPlayArea();
-    updated_poojyam = poojyams[data[0]][data[1]]
-    updated_poojyam.draw(true, 'other');
+    from = poojyams[data[0][0]][data[0][1]];
+    to = poojyams[data[1][0]][data[1][1]];
+    drawLine(from, to);
+    // alert(data[1][0]);
+    // updated_poojyam = poojyams[data[0]][data[1]]
+    // updated_poojyam.draw(true, 'other');
 }
 
 openChannel = function() {

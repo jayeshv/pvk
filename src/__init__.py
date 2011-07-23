@@ -14,6 +14,11 @@ def get_board_from_request(request):
         return Board.get_by_id(int(board_id))
     return None
 
+def get_board_from_id(board_id):
+    if id:
+        return Board.get_by_id(int(board_id))
+    return None
+
 def get_other_player_channel_key(board, user):
     if board.player1 == user:
         return str(board.key().id()) + board.player2.user_id()
