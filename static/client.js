@@ -195,6 +195,39 @@ drawLine = function(from, to) {
     cxt.lineTo(to.row * spacing, to.column * spacing);
     cxt.stroke();
     lines[[from.row * 10 + from.column, to.row * 10 + to.column]] = true;
+    checkForSquare(from, to);
+}
+
+checkForSquare = function(from, to) {
+    var rowDiff = Math.abs(from.row-to.row)
+    var colDiff = Math.abs(from.column-to.column)
+    if(rowDiff == 0) {
+	if(lineExists([from.row - 1, from.column], [to.row - 1, to.column]) && lineExists([from.row, from.column], [from.row - 1, from.column]) && lineExists([to.row - 1, to.column], [to.row, to.column])) {	
+	    //left square
+	}
+	if(lineExists([from.row + 1, from.column], [to.row + 1, to.column]) && lineExists([from.row, from.column], [from.row + 1, from.column]) && lineExists([to.row + 1, to.column], [to.row, to.column])) {	
+	    //right square
+	}
+    }
+    else {
+	if(lineExists([from.row, from.column - 1], [to.row, to.column - 1]) && lineExists([from.row, from.column], [from.row, from.column - 1]) && lineExists([to.row, to.column - 1], [to.row, to.column])) {	
+	    //top square;
+	}
+	if(lineExists([from.row, from.column + 1], [to.row, to.column + 1]) && lineExists([from.row, from.column], [from.row, from.column + 1]) && lineExists([to.row, to.column + 1], [to.row, to.column])) {	
+	    //bottom square
+	}
+    }
+}
+
+lineExists = function(from, to) {
+    // alert(from);
+    // alert(to);
+    var fromVal = 10 * from[0] + from[1];
+    var toVal = 10 * to[0] + to[1];
+    if(lines[[fromVal, toVal]] || lines[[toVal, fromVal]]) {
+    	return true;
+    }
+    return false;
 }
 
 sendStrike = function(from, to) {
