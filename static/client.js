@@ -5,6 +5,7 @@ var spacing;
 var radius;
 var poojyams;
 var activePoojyam;
+var lines = new Array();
 
 var activeColor = {
     'me': "#C40D0D",
@@ -177,13 +178,23 @@ poojyamClicked = function(selected) {
 }
 
 checkProximity = function(selected, active) {
-    return true;
+    var rowDiff = Math.abs(selected.row-active.row)
+    var colDiff = Math.abs(selected.column-active.column)
+    if((rowDiff == 0 && colDiff == 1) || (rowDiff == 1 && colDiff == 0)) {
+	//check if line exists	
+	if(lines[[selected.row * 10 + selected.column, active.row * 10 + active.column]] || lines[[active.row * 10 + active.column, selected.row * 10 + selected.column]]) {
+	    return false;
+	}
+	return true;
+    }
+    return false;
 }
 
 drawLine = function(from, to) {
     cxt.moveTo(from.row * spacing, from.column * spacing);
     cxt.lineTo(to.row * spacing, to.column * spacing);
     cxt.stroke();
+    lines[[from.row * 10 + from.column, to.row * 10 + to.column]] = true;
 }
 
 sendStrike = function(from, to) {
