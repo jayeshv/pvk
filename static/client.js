@@ -167,8 +167,8 @@ poojyamClicked = function(selected) {
     if(activePoojyam) {
 	activePoojyam.draw(false, '');
 	if(checkProximity(selected, activePoojyam)) {
-	    drawLine(activePoojyam, selected);	    
-	    sendStrike(activePoojyam, selected);
+	    var pointGain = drawLine(activePoojyam, selected); 
+	    sendStrike(activePoojyam, selected, pointGain);
 	    activePoojyam = null;
 	}
 	else {
@@ -201,32 +201,38 @@ drawLine = function(from, to) {
     //cxt.lineWidth = 2;
     cxt.stroke();
     lines[[from.row * 10 + from.column, to.row * 10 + to.column]] = true;
-    checkForSquare(from, to);
+    return checkForSquare(from, to);
 }
 
 checkForSquare = function(from, to) {
     var rowDiff = Math.abs(from.row-to.row)
     var colDiff = Math.abs(from.column-to.column)
+    var pointGain = false;
     if(rowDiff == 0) {
 	if(lineExists([from.row - 1, from.column], [to.row - 1, to.column]) && lineExists([from.row, from.column], [from.row - 1, from.column]) && lineExists([to.row - 1, to.column], [to.row, to.column])) {	
 	    //left square
 	    claimSquare([from.row, from.column]);
+	    pointGain = true;
 	}
 	if(lineExists([from.row + 1, from.column], [to.row + 1, to.column]) && lineExists([from.row, from.column], [from.row + 1, from.column]) && lineExists([to.row + 1, to.column], [to.row, to.column])) {	
 	    //right square
 	    claimSquare([from.row, from.column]);
+	    pointGain = true;
 	}
     }
     else {
 	if(lineExists([from.row, from.column - 1], [to.row, to.column - 1]) && lineExists([from.row, from.column], [from.row, from.column - 1]) && lineExists([to.row, to.column - 1], [to.row, to.column])) {
 	    //top square;
 	    claimSquare([0, 0]);
+	    pointGain = true;
 	}
 	if(lineExists([from.row, from.column + 1], [to.row, to.column + 1]) && lineExists([from.row, from.column], [from.row, from.column + 1]) && lineExists([to.row, to.column + 1], [to.row, to.column])) {	
 	    //bottom square
 	    claimSquare([0, 0]);
+	    pointGain = true;
 	}
     }
+    return pointGain;
 }
 
 claimSquare = function(topLeft) {
@@ -265,20 +271,28 @@ lineExists = function(from, to) {
     return false;
 }
 
-sendStrike = function(from, to) {
-    board.myturn = false;
+checkForFinish = function() {
+}
+
+sendStrike = function(from, to, pointGain) {
+    // if(!pointGain) {
+    // 	board.myturn = false;
+    // }
     //showPlayArea();
     var postData = JSON.stringify({'board': board.board_id, 'line_from': [from.row, from.column], 'line_to': [to.row, to.column]}, '');
     $.post('/strike', {'update': postData},
 	   function (data) {
-	       board.myturn = false;
-	       if(board.i_am_player1) {
-		   $('#player1').removeClass('active');
-		   $('#player2').addClass('active');
-	       }
-	       else {
-		   $('#player2').removeClass('active');
-		   $('#player1').addClass('active');
+	       //board.myturn = false;
+	       if(!pointGain) {
+		   if(board.i_am_player1) {
+		       $('#player1').removeClass('active');
+		       $('#player2').addClass('active');
+		   }
+		   else {
+		       $('#player2').removeClass('active');
+		       $('#player1').addClass('active');
+		   }
+		   board.myturn = false;
 	       }
 	   });
 }
@@ -315,19 +329,21 @@ playerJoined = function(user) {
 }
 
 updateReceived = function(data) {
-    if(board.i_am_player1) {
-	$('#player2').removeClass('active');
-	$('#player1').addClass('active');  
-    }
-    else {
-	$('#player1').removeClass('active');
-	$('#player2').addClass('active');
-    }
     //showPlayArea();
     from = poojyams[data[0][0]][data[0][1]];
     to = poojyams[data[1][0]][data[1][1]];
-    drawLine(from, to);
-    board.myturn = true;    
+    var pointGain = drawLine(from, to);
+    if(!pointGain) {
+	if(board.i_am_player1) {
+	    $('#player2').removeClass('active');
+	    $('#player1').addClass('active');  
+	}
+	else {
+	    $('#player1').removeClass('active');
+	    $('#player2').addClass('active');
+	}
+	board.myturn = true;
+    }
     // alert(data[1][0]);
     // updated_poojyam = poojyams[data[0]][data[1]]
     // updated_poojyam.draw(true, 'other');
