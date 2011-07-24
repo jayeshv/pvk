@@ -5,9 +5,9 @@
 <!--   {% include 'player_joined.html' %} -->
 <!-- </div> -->
 <div id="board_url" class="url"></div>
-<div id="plyers">
-  <div id="player1" class="player"><span id="player1_name" class="name"></span><span id="player1_points" class="point">0</span></div>
-  <div id="player2" class="player player2"><span id="player2_name" class="name"></span><span id="player2_points" class="point">0</span></div>
+<div id="players">
+  <div id="player1" class="player"><span id="player1_name" class="name"></span><span id="player1_points" class="point"></span></div>
+  <div id="player2" class="player player2"><span id="player2_name" class="name"></span><span id="player2_points" class="point"></span></div>
 </div>
 <!-- <div id="your_move"> -->
 <!--   your move -->
@@ -15,10 +15,15 @@
 <!-- <div id="opponend_move"> -->
 <!--   wait for other player to move -->
 <!-- </div> -->
-<div id="won_game">
-  You won
+<div id="won_game" class="result">
+  <span class="result_text">You won !!!</span>
 </div>
-<div id="lost_game">
-  You lost
+<div id="draw_game" class="result">
+  <span class="result_text">Game drawn !!!</span>
+</div>
+<div id="lost_game" class="result">
+  <span class="result_text">You lost !!!</span>
 </div>
 <canvas id="myCanvas"></canvas>
+<!-- <div id="close" /> -->
+

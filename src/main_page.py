@@ -20,9 +20,12 @@ class MainPage(webapp.RequestHandler):
         token = ''
         other_player = ''
         user = users.get_current_user()
+        logout_url = users.create_logout_url("/")
+        board_dimention = ''
         if board_id:
-            board = Board.get_by_id(int(board_id))
+            board = Board.get_by_id(int(board_id))            
             if board:
+                board_dimention = board.dimension
                 if board.may_join(user):
                     token = create_channel(str(board.key().id()) + user.user_id())
                     other_player = board.player1
@@ -33,7 +36,6 @@ class MainPage(webapp.RequestHandler):
             else:
                 self.redirect('/')
         path = os.path.join('templates', 'pvk.html')
-        self.response.out.write(template.render(path, {'token': token,
-                                                       'board_id': board_id,
-                                                       'me_user': get_user_dump(user),
+        self.response.out.write(template.render(path, {'token': token, 'board_id': board_id, 'me_user': get_user_dump(user),
+                                                       'board_dimention': board_dimention, 'logout_url': logout_url,
                                                        'other_player': get_user_dump(other_player)}))

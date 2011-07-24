@@ -102,16 +102,18 @@ showPlayArea = function() {
     }
     if(board.myturn) {
 	$("#players").hide();
-	// $("#your_move").show();
+	//$("#your_move").show();
 	$("#won_game").hide();
+	$("#draw_game").hide();
 	$("#lost_game").hide();
 	// $("#opponend_move").hide();
 	showClickableBoard();
     }
     else {
 	$("#players").show();
-	$("#your_move").hide();
+	//$("#your_move").hide();
 	$("#won_game").hide();
+	$("#draw_game").hide();
 	$("#lost_game").hide();
 	$("#opponend_move").show();
 	showReadonlyaBoard();
@@ -144,7 +146,7 @@ drawBoard = function() {
 	    this_poojyam.draw(false, '');
     	}
     }
-
+    //showCloseButton();
     var canvasElement = $("#myCanvas");
     canvasElement.click(function(e) {
 	if(board.myturn) {
@@ -161,6 +163,10 @@ drawBoard = function() {
 	    }
 	}
     });
+}
+
+showCloseButton = function() {
+    $("close").show();
 }
 
 poojyamClicked = function(selected) {
@@ -187,7 +193,7 @@ checkProximity = function(selected, active) {
     var colDiff = Math.abs(selected.column-active.column)
     if((rowDiff == 0 && colDiff == 1) || (rowDiff == 1 && colDiff == 0)) {
 	//check if line exists
-	if(lines[[selected.row * 10 + selected.column, active.row * 10 + active.column]] || lines[[active.row * 10 + active.column, selected.row * 10 + selected.column]]) {
+	if(lines[[selected.row * board.dimension + selected.column, active.row * board.dimension + active.column]] || lines[[active.row * board.dimension + active.column, selected.row * board.dimension + selected.column]]) {
 	    return false;
 	}
 	return true;
@@ -201,7 +207,7 @@ drawLine = function(from, to) {
     //cxt.lineWidth = 2;
     cxt.stroke();
     totalLines = totalLines + 1;
-    lines[[from.row * 10 + from.column, to.row * 10 + to.column]] = true;
+    lines[[from.row * board.dimension + from.column, to.row * board.dimension + to.column]] = true;
     var pointGain = checkForSquare(from, to);
     if(pointGain) {
 	checkForFinish();
@@ -304,8 +310,8 @@ drawPlayerInside = function(imageUrl, topLeft) {
 }
 
 lineExists = function(from, to) {
-    var fromVal = 10 * from[0] + from[1];
-    var toVal = 10 * to[0] + to[1];
+    var fromVal = board.dimension * from[0] + from[1];
+    var toVal = board.dimension * to[0] + to[1];
     if(lines[[fromVal, toVal]] || lines[[toVal, fromVal]]) {
     	return true;
     }
@@ -313,25 +319,26 @@ lineExists = function(from, to) {
 }
 
 checkForFinish = function() {
-    if(totalLines == 180) {
+    if(totalLines == (2 * board.dimension * (board.dimension - 1))) {
 	if(totalPlayer1 > totalPlayer2) {
 	    if(board.i_am_player1) {
-		alert('you won');
+		//alert('you won');
+		$("#won_game").show();
 	    }
 	    else {
-		alert('you lost !!');
+		$("#lost_game").show();
 	    }
 	}
 	else if(totalPlayer2 > totalPlayer1) {
 	    if(board.i_am_player1) {
-		alert('you lost');
+		$("#lost_game").show();
 	    }
 	    else {
-		alert('you won');
+		$("#won_game").show();
 	    }
 	}
 	else if(totalPlayer2 == totalPlayer1) {
-	    alert("game drawn");
+	    $("#draw_game").show();
 	}
     }
 }
