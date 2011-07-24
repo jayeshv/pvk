@@ -26,14 +26,13 @@ $(document).ready(function() {
 	openChannel();
 	$('#board_url').hide();
 	board.i_am_player1 = false;
-	board.myturn = false;
-	$('#player1').addClass('player active');
+	board.myturn = false;	
+	$('#player1').addClass('active');
 	$('#player1').css('background-image', 'url("' + board.other_player.avatar + '")');
 	$('#player1_name').text(board.other_player.name);
 
 	$('#player2').css('background-image', 'url("' + board.me.avatar + '")');
 	$('#player2_name').text(board.me.name);
-	$('#player2').addClass('player player2');
 	showBoard();
     }
 });
@@ -119,7 +118,7 @@ showPlayArea = function() {
     }
 }
 
-showClickableBoard = function() {    
+showClickableBoard = function() {
     var boardCanvas = $("#myCanvas")[0];
     drawBoard();
 }
@@ -136,7 +135,7 @@ drawBoard = function() {
     var i;
     var j;
     poojyams = new Array(board.dimension);
-    for(i=1; i<=board.dimension; i++) 
+    for(i=1; i<=board.dimension; i++)
     {
 	poojyams[i] = new Array(board.dimension);
     	for(j=1; j<=board.dimension; j++) {
@@ -168,7 +167,7 @@ poojyamClicked = function(selected) {
     if(activePoojyam) {
 	activePoojyam.draw(false, '');
 	if(checkProximity(selected, activePoojyam)) {
-	    var pointGain = drawLine(activePoojyam, selected); 
+	    var pointGain = drawLine(activePoojyam, selected);
 	    sendStrike(activePoojyam, selected, pointGain);
 	    activePoojyam = null;
 	}
@@ -187,7 +186,7 @@ checkProximity = function(selected, active) {
     var rowDiff = Math.abs(selected.row-active.row)
     var colDiff = Math.abs(selected.column-active.column)
     if((rowDiff == 0 && colDiff == 1) || (rowDiff == 1 && colDiff == 0)) {
-	//check if line exists	
+	//check if line exists
 	if(lines[[selected.row * 10 + selected.column, active.row * 10 + active.column]] || lines[[active.row * 10 + active.column, selected.row * 10 + selected.column]]) {
 	    return false;
 	}
@@ -215,12 +214,12 @@ checkForSquare = function(from, to) {
     var colDiff = Math.abs(from.column-to.column)
     var pointGain = false;
     if(rowDiff == 0) {
-	if(lineExists([from.row - 1, from.column], [to.row - 1, to.column]) && lineExists([from.row, from.column], [from.row - 1, from.column]) && lineExists([to.row - 1, to.column], [to.row, to.column])) {	
+	if(lineExists([from.row - 1, from.column], [to.row - 1, to.column]) && lineExists([from.row, from.column], [from.row - 1, from.column]) && lineExists([to.row - 1, to.column], [to.row, to.column])) {
 	    //left square
 	    claimSquare([from.row, from.column]);
 	    pointGain = true;
 	}
-	if(lineExists([from.row + 1, from.column], [to.row + 1, to.column]) && lineExists([from.row, from.column], [from.row + 1, from.column]) && lineExists([to.row + 1, to.column], [to.row, to.column])) {	
+	if(lineExists([from.row + 1, from.column], [to.row + 1, to.column]) && lineExists([from.row, from.column], [from.row + 1, from.column]) && lineExists([to.row + 1, to.column], [to.row, to.column])) {
 	    //right square
 	    claimSquare([from.row, from.column]);
 	    pointGain = true;
@@ -232,7 +231,7 @@ checkForSquare = function(from, to) {
 	    claimSquare([0, 0]);
 	    pointGain = true;
 	}
-	if(lineExists([from.row, from.column + 1], [to.row, to.column + 1]) && lineExists([from.row, from.column], [from.row, from.column + 1]) && lineExists([to.row, to.column + 1], [to.row, to.column])) {	
+	if(lineExists([from.row, from.column + 1], [to.row, to.column + 1]) && lineExists([from.row, from.column], [from.row, from.column + 1]) && lineExists([to.row, to.column + 1], [to.row, to.column])) {
 	    //bottom square
 	    claimSquare([0, 0]);
 	    pointGain = true;
@@ -302,21 +301,21 @@ checkForFinish = function() {
 }
 
 sendStrike = function(from, to, pointGain) {
+    if(!pointGain) {
+	board.myturn = false;
+	if(board.i_am_player1) {
+	    $('#player1').removeClass('active');
+	    $('#player2').addClass('active');
+	}
+	else {
+	    $('#player2').removeClass('active');
+	    $('#player1').addClass('active');
+	}
+    }
     var postData = JSON.stringify({'board': board.board_id, 'line_from': [from.row, from.column], 'line_to': [to.row, to.column]}, '');
     $.post('/strike', {'update': postData},
 	   function (data) {
 	       //board.myturn = false;
-	       if(!pointGain) {
-		   if(board.i_am_player1) {
-		       $('#player1').removeClass('active');
-		       $('#player2').addClass('active');
-		   }
-		   else {
-		       $('#player2').removeClass('active');
-		       $('#player1').addClass('active');
-		   }
-		   board.myturn = false;
-	       }
 	   });
 }
 
@@ -341,14 +340,22 @@ createNewBoard = function(dimension) {
 
 playerJoined = function(user) {
     board.other_player = user;
+    setTimeout("setJoinedUser()", 4000);   //a hack
+    //showPlayArea();
+}
+
+setJoinedUser = function() {
     $('#board_url').hide();
-    board.myturn = true;
-    $('#player2').addClass("player player2");
     $('#player2').removeClass("waiting");
     $('#player2').css('background-image', 'url("' + board.other_player.avatar + '")');
     $('#player2_name').text(board.other_player.name);
-    $('#player1').addClass("active");
-    //showPlayArea();
+    board.myturn = true;
+    if(board.i_am_player1) {
+	$('#player1').addClass("active");
+    }
+    else {
+	$('#player2').addClass("active");
+    }
 }
 
 updateReceived = function(data) {
@@ -359,7 +366,7 @@ updateReceived = function(data) {
     if(!pointGain) {
 	if(board.i_am_player1) {
 	    $('#player2').removeClass('active');
-	    $('#player1').addClass('active');  
+	    $('#player1').addClass('active');
 	}
 	else {
 	    $('#player1').removeClass('active');
@@ -367,9 +374,6 @@ updateReceived = function(data) {
 	}
 	board.myturn = true;
     }
-    // alert(data[1][0]);
-    // updated_poojyam = poojyams[data[0]][data[1]]
-    // updated_poojyam.draw(true, 'other');
 }
 
 openChannel = function() {
@@ -391,13 +395,12 @@ onOpened = function() {
 onMessage = function(msg) {
     message = JSON.parse(msg.data);
     if(message.type=="join") {
-	playerJoined(message.user)
+	playerJoined(message.user);
     }
     else if(message.type=='update') {
-	updateReceived(message.update)
+	updateReceived(message.update);
     }
     else if(message.type=='leave') {
     	alert("leave");
     }
 };
-
