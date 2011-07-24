@@ -17,3 +17,4 @@ class NewBoard(webapp.RequestHandler):
         token = create_channel(str(board.key().id()) + user.user_id())
         self.response.out.write(simplejson.dumps({'board_id': board.key().id(),
                                                   'token': token}))
+

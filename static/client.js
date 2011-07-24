@@ -6,6 +6,8 @@ var radius;
 var poojyams;
 var activePoojyam;
 var lines = new Array();
+var totalPlayer1 = 0;
+var totalPlayer2 = 0;
 
 var activeColor = {
     'me': "#C40D0D",
@@ -26,10 +28,10 @@ $(document).ready(function() {
 	board.myturn = false;
 	$('#player1').addClass('player active');
 	$('#player1').css('background-image', 'url("' + board.other_player.avatar + '")');
-	$('#player1_name').html(board.other_player.name);
+	$('#player1_name').text(board.other_player.name);
 
 	$('#player2').css('background-image', 'url("' + board.me.avatar + '")');
-	$('#player2_name').html(board.me.name);
+	$('#player2_name').text(board.me.name);
 	$('#player2').addClass('player player2');
 	showBoard();
     }
@@ -61,6 +63,7 @@ draw = function(active, user) {
 	}
     }
     cxt.beginPath();
+    //cxt.lineWidth = 1;
     cxt.arc(this.row*spacing, this.column*spacing, radious, radious, Math.PI*2, true);
     cxt.closePath();
     cxt.fill();
@@ -141,16 +144,18 @@ drawBoard = function() {
 	    this_poojyam.draw(false, '');
     	}
     }
+
     var canvasElement = $("#myCanvas");
     canvasElement.click(function(e) {
 	if(board.myturn) {
 	    xpos = e.clientX - canvasElement.position().left;
 	    ypos = e.clientY - canvasElement.position().top;
-	    for(i=1; i<=board.dimension; i++) 
+	    for(i=1; i<=board.dimension; i++)
 	    {
     		for(j=1; j<=board.dimension; j++) {
 		    if(poojyams[i][j].isMyRegion(xpos, ypos)) {
-			poojyamClicked(poojyams[i][j])
+			poojyamClicked(poojyams[i][j]);
+			break;
 		    }
     		}
 	    }
@@ -162,7 +167,7 @@ poojyamClicked = function(selected) {
     if(activePoojyam) {
 	activePoojyam.draw(false, '');
 	if(checkProximity(selected, activePoojyam)) {
-	    drawLine(activePoojyam, selected);
+	    drawLine(activePoojyam, selected);	    
 	    sendStrike(activePoojyam, selected);
 	    activePoojyam = null;
 	}
@@ -193,6 +198,7 @@ checkProximity = function(selected, active) {
 drawLine = function(from, to) {
     cxt.moveTo(from.row * spacing, from.column * spacing);
     cxt.lineTo(to.row * spacing, to.column * spacing);
+    //cxt.lineWidth = 2;
     cxt.stroke();
     lines[[from.row * 10 + from.column, to.row * 10 + to.column]] = true;
     checkForSquare(from, to);
@@ -204,24 +210,53 @@ checkForSquare = function(from, to) {
     if(rowDiff == 0) {
 	if(lineExists([from.row - 1, from.column], [to.row - 1, to.column]) && lineExists([from.row, from.column], [from.row - 1, from.column]) && lineExists([to.row - 1, to.column], [to.row, to.column])) {	
 	    //left square
+	    claimSquare([from.row, from.column]);
 	}
 	if(lineExists([from.row + 1, from.column], [to.row + 1, to.column]) && lineExists([from.row, from.column], [from.row + 1, from.column]) && lineExists([to.row + 1, to.column], [to.row, to.column])) {	
 	    //right square
+	    claimSquare([from.row, from.column]);
 	}
     }
     else {
-	if(lineExists([from.row, from.column - 1], [to.row, to.column - 1]) && lineExists([from.row, from.column], [from.row, from.column - 1]) && lineExists([to.row, to.column - 1], [to.row, to.column])) {	
+	if(lineExists([from.row, from.column - 1], [to.row, to.column - 1]) && lineExists([from.row, from.column], [from.row, from.column - 1]) && lineExists([to.row, to.column - 1], [to.row, to.column])) {
 	    //top square;
+	    claimSquare([0, 0]);
 	}
 	if(lineExists([from.row, from.column + 1], [to.row, to.column + 1]) && lineExists([from.row, from.column], [from.row, from.column + 1]) && lineExists([to.row, to.column + 1], [to.row, to.column])) {	
 	    //bottom square
+	    claimSquare([0, 0]);
+	}
+    }
+}
+
+claimSquare = function(topLeft) {
+    if(board.myturn) {
+	if(board.i_am_player1) {
+	    //player1
+	    totalPlayer1 = totalPlayer1 + 1;
+	    $("#player1_points").text(totalPlayer1);
+	}
+	else {
+	    //player2
+	    totalPlayer2 = totalPlayer2 + 1;
+	    $("#player2_points").text(totalPlayer2);
+	}
+    }
+    else {
+	if(board.i_am_player1) {
+	    //player2
+	    totalPlayer2 = totalPlayer2 + 1;
+	    $("#player2_points").text(totalPlayer2);
+	}
+	else {
+	    //player1
+	    totalPlayer1 = totalPlayer1 + 1;
+	    $("#player1_points").text(totalPlayer1);
 	}
     }
 }
 
 lineExists = function(from, to) {
-    // alert(from);
-    // alert(to);
     var fromVal = 10 * from[0] + from[1];
     var toVal = 10 * to[0] + to[1];
     if(lines[[fromVal, toVal]] || lines[[toVal, fromVal]]) {
@@ -252,14 +287,14 @@ createNewBoard = function(dimension) {
     board.dimension = dimension;
     $.post('/new', {'dimension': dimension},
 	   function (data) {
-	       newBoard = JSON.parse(data);	       
+	       newBoard = JSON.parse(data);
 	       $('#board_url').show();
 	       $('#board_url').html("Share this url: <span class=\"url\">http://pvk.jayeshv.info?board=" + newBoard.board_id + "</span>");
 	       board.token = newBoard.token;
 	       board.i_am_player1 = true;
 	       $('#player1').addClass("player");
 	       $('#player1').css('background-image', 'url("' + board.me.avatar + '")');
-	       $('#player1_name').html(board.me.name);
+	       $('#player1_name').text(board.me.name);
 	       $('#player2').addClass("waiting");
 	       board.board_id = newBoard.board_id;
 	       openChannel();
@@ -274,13 +309,12 @@ playerJoined = function(user) {
     $('#player2').addClass("player player2");
     $('#player2').removeClass("waiting");
     $('#player2').css('background-image', 'url("' + board.other_player.avatar + '")');
-    $('#player2').html(board.other_player.name);
+    $('#player2_name').text(board.other_player.name);
     $('#player1').addClass("active");
     //showPlayArea();
 }
 
 updateReceived = function(data) {
-    board.myturn = true;
     if(board.i_am_player1) {
 	$('#player2').removeClass('active');
 	$('#player1').addClass('active');  
@@ -293,6 +327,7 @@ updateReceived = function(data) {
     from = poojyams[data[0][0]][data[0][1]];
     to = poojyams[data[1][0]][data[1][1]];
     drawLine(from, to);
+    board.myturn = true;    
     // alert(data[1][0]);
     // updated_poojyam = poojyams[data[0]][data[1]]
     // updated_poojyam.draw(true, 'other');

@@ -117,5 +117,12 @@ body {
 
 .name
 {
-    position: bottom;
+    float: left;
+    /* position: bottom; */
+}
+
+.point
+{
+    float: right;
+    /* position: bottom; */
 }
