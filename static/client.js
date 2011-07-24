@@ -210,30 +210,54 @@ drawLine = function(from, to) {
 }
 
 checkForSquare = function(from, to) {
-    var rowDiff = Math.abs(from.row-to.row)
-    var colDiff = Math.abs(from.column-to.column)
+    var rowDiff = from.row-to.row;
+    var colDiff = from.column-to.column;
     var pointGain = false;
     if(rowDiff == 0) {
 	if(lineExists([from.row - 1, from.column], [to.row - 1, to.column]) && lineExists([from.row, from.column], [from.row - 1, from.column]) && lineExists([to.row - 1, to.column], [to.row, to.column])) {
 	    //left square
-	    claimSquare([from.row, from.column]);
+	    if(colDiff == 1) {
+		var completedTop = [to.row - 1, to.column];
+	    }
+	    else {
+		var completedTop = [from.row - 1, from.column];
+	    }
+	    claimSquare(completedTop);
 	    pointGain = true;
 	}
 	if(lineExists([from.row + 1, from.column], [to.row + 1, to.column]) && lineExists([from.row, from.column], [from.row + 1, from.column]) && lineExists([to.row + 1, to.column], [to.row, to.column])) {
 	    //right square
-	    claimSquare([from.row, from.column]);
+	    if(colDiff == 1) {
+		var completedTop = [to.row, to.column];
+	    }
+	    else {
+		var completedTop = [from.row, from.column];
+	    }
+	    claimSquare(completedTop);
 	    pointGain = true;
 	}
     }
     else {
 	if(lineExists([from.row, from.column - 1], [to.row, to.column - 1]) && lineExists([from.row, from.column], [from.row, from.column - 1]) && lineExists([to.row, to.column - 1], [to.row, to.column])) {
 	    //top square;
-	    claimSquare([0, 0]);
+	    if(rowDiff == 1) {
+		var completedTop = [to.row, to.column - 1];
+	    }
+	    else {
+		var completedTop = [from.row, from.column - 1];
+	    }
+	    claimSquare(completedTop);
 	    pointGain = true;
 	}
 	if(lineExists([from.row, from.column + 1], [to.row, to.column + 1]) && lineExists([from.row, from.column], [from.row, from.column + 1]) && lineExists([to.row, to.column + 1], [to.row, to.column])) {
 	    //bottom square
-	    claimSquare([0, 0]);
+	    if(rowDiff == 1) {
+		var completedTop = [to.row, to.column];
+	    }
+	    else {
+		var completedTop = [from.row, from.column];
+	    }
+	    claimSquare(completedTop);
 	    pointGain = true;
 	}
     }
@@ -246,11 +270,13 @@ claimSquare = function(topLeft) {
 	    //player1
 	    totalPlayer1 = totalPlayer1 + 1;
 	    $("#player1_points").text(totalPlayer1);
+	    drawPlayerInside(board.me.avatar_small, topLeft);
 	}
 	else {
 	    //player2
 	    totalPlayer2 = totalPlayer2 + 1;
 	    $("#player2_points").text(totalPlayer2);
+	    drawPlayerInside(board.me.avatar_small, topLeft);
 	}
     }
     else {
@@ -258,12 +284,22 @@ claimSquare = function(topLeft) {
 	    //player2
 	    totalPlayer2 = totalPlayer2 + 1;
 	    $("#player2_points").text(totalPlayer2);
+	    drawPlayerInside(board.other_player.avatar_small, topLeft);
 	}
 	else {
 	    //player1
 	    totalPlayer1 = totalPlayer1 + 1;
 	    $("#player1_points").text(totalPlayer1);
+	    drawPlayerInside(board.other_player.avatar_small, topLeft);
 	}
+    }
+}
+
+drawPlayerInside = function(imageUrl, topLeft) {
+    var img = new Image();
+    img.src = imageUrl;
+    img.onload = function(){
+	cxt.drawImage(img, topLeft[0] * spacing + radious, topLeft[1] * spacing + radious);
     }
 }
 

@@ -28,14 +28,15 @@ def get_other_player_channel_key(board, user):
 def get_user_dump(user, format='json'):
     if user:
         avatar = get_gravatar_url(user.email())
+        avatar_small = get_gravatar_url(user.email(), size=30)
         if format == 'dict':
-            return {'id': user.user_id(), 'name': user.nickname(), 'avatar': avatar}
+            return {'id': user.user_id(), 'name': user.nickname(), 'avatar': avatar, 'avatar_small': avatar_small}
         elif format == 'json':
-            return simplejson.dumps({'id': user.user_id(), 'name': user.nickname(), 'avatar': avatar})
+            return simplejson.dumps({'id': user.user_id(), 'name': user.nickname(), 'avatar': avatar, 'avatar_small': avatar_small})
     return None
 
-def get_gravatar_url(email, size=60):
-    default = "http://www.gravatar.com/avatar/0?s=60"
+def get_gravatar_url(email, size=60):    
+    default = "http://www.gravatar.com/avatar/0?s=" + str(size)
     gravatar_url = "http://www.gravatar.com/avatar.php?"
     gravatar_url += urllib.urlencode({
         'gravatar_id':hashlib.md5(email.lower()).hexdigest(),
