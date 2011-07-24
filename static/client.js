@@ -8,6 +8,7 @@ var activePoojyam;
 var lines = new Array();
 var totalPlayer1 = 0;
 var totalPlayer2 = 0;
+var totalLines = 0;
 
 var activeColor = {
     'me': "#C40D0D",
@@ -200,8 +201,13 @@ drawLine = function(from, to) {
     cxt.lineTo(to.row * spacing, to.column * spacing);
     //cxt.lineWidth = 2;
     cxt.stroke();
+    totalLines = totalLines + 1;
     lines[[from.row * 10 + from.column, to.row * 10 + to.column]] = true;
-    return checkForSquare(from, to);
+    var pointGain = checkForSquare(from, to);
+    if(pointGain) {
+	checkForFinish();
+    }
+    return pointGain;
 }
 
 checkForSquare = function(from, to) {
@@ -272,13 +278,30 @@ lineExists = function(from, to) {
 }
 
 checkForFinish = function() {
+    if(totalLines == 180) {
+	if(totalPlayer1 > totalPlayer2) {
+	    if(board.i_am_player1) {
+		alert('you won');
+	    }
+	    else {
+		alert('you lost !!');
+	    }
+	}
+	else if(totalPlayer2 > totalPlayer1) {
+	    if(board.i_am_player1) {
+		alert('you lost');
+	    }
+	    else {
+		alert('you won');
+	    }
+	}
+	else if(totalPlayer2 == totalPlayer1) {
+	    alert("game drawn");
+	}
+    }
 }
 
 sendStrike = function(from, to, pointGain) {
-    // if(!pointGain) {
-    // 	board.myturn = false;
-    // }
-    //showPlayArea();
     var postData = JSON.stringify({'board': board.board_id, 'line_from': [from.row, from.column], 'line_to': [to.row, to.column]}, '');
     $.post('/strike', {'update': postData},
 	   function (data) {
