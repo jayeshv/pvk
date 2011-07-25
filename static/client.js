@@ -26,7 +26,7 @@ $(document).ready(function() {
 	openChannel();
 	$('#board_url').hide();
 	board.i_am_player1 = false;
-	board.myturn = false;	
+	board.myturn = false;
 	$('#player1').addClass('active');
 	$('#player1').css('background-image', 'url("' + board.other_player.avatar + '")');
 	$('#player1_name').text(board.other_player.name);
@@ -63,7 +63,6 @@ draw = function(active, user) {
 	}
     }
     cxt.beginPath();
-    //cxt.lineWidth = 1;
     cxt.arc(this.row*spacing, this.column*spacing, radious, radious, Math.PI*2, true);
     cxt.closePath();
     cxt.fill();
@@ -94,40 +93,25 @@ showPlayArea = function() {
     $("#board").show();
     if(!board.other_player) {
 	$("#players").show();
-	// $("#your_move").hide();
-	// $("#opponend_move").hide();
     }
     else {
 	$("#players").hide();
     }
     if(board.myturn) {
 	$("#players").hide();
-	//$("#your_move").show();
 	$("#won_game").hide();
 	$("#draw_game").hide();
 	$("#lost_game").hide();
-	// $("#opponend_move").hide();
-	showClickableBoard();
+	drawBoard();
     }
     else {
 	$("#players").show();
-	//$("#your_move").hide();
 	$("#won_game").hide();
 	$("#draw_game").hide();
 	$("#lost_game").hide();
 	$("#opponend_move").show();
-	showReadonlyaBoard();
+	drawBoard();
     }
-}
-
-showClickableBoard = function() {
-    var boardCanvas = $("#myCanvas")[0];
-    drawBoard();
-}
-
-showReadonlyaBoard = function() {
-    var boardCanvas = $("#myCanvas")[0];
-    drawBoard();
 }
 
 drawBoard = function() {
@@ -204,7 +188,6 @@ checkProximity = function(selected, active) {
 drawLine = function(from, to) {
     cxt.moveTo(from.row * spacing, from.column * spacing);
     cxt.lineTo(to.row * spacing, to.column * spacing);
-    //cxt.lineWidth = 2;
     cxt.stroke();
     totalLines = totalLines + 1;
     lines[[from.row * board.dimension + from.column, to.row * board.dimension + to.column]] = true;
@@ -384,7 +367,6 @@ createNewBoard = function(dimension) {
 playerJoined = function(user) {
     board.other_player = user;
     setTimeout("setJoinedUser()", 4000);   //a hack
-    //showPlayArea();
 }
 
 setJoinedUser = function() {
@@ -402,7 +384,6 @@ setJoinedUser = function() {
 }
 
 updateReceived = function(data) {
-    //showPlayArea();
     from = poojyams[data[0][0]][data[0][1]];
     to = poojyams[data[1][0]][data[1][1]];
     var pointGain = drawLine(from, to);
@@ -424,7 +405,9 @@ openChannel = function() {
     var handler = {
         'onopen': onOpened,
         'onmessage': onMessage,
-        'onerror': function() {},
+        'onerror': function() {
+	    alert("The connection between you and other player seems to be broken...");
+	},
         'onclose': function() {}
     };
     var socket = channel.open(handler);

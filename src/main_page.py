@@ -23,7 +23,7 @@ class MainPage(webapp.RequestHandler):
         logout_url = users.create_logout_url("/")
         board_dimention = ''
         if board_id:
-            board = Board.get_by_id(int(board_id))            
+            board = Board.get_by_id(int(board_id))
             if board:
                 board_dimention = board.dimension
                 if board.may_join(user):

@@ -35,7 +35,7 @@ def get_user_dump(user, format='json'):
             return simplejson.dumps({'id': user.user_id(), 'name': user.nickname(), 'avatar': avatar, 'avatar_small': avatar_small})
     return None
 
-def get_gravatar_url(email, size=60):    
+def get_gravatar_url(email, size=60):
     default = "http://www.gravatar.com/avatar/0?s=" + str(size)
     gravatar_url = "http://www.gravatar.com/avatar.php?"
     gravatar_url += urllib.urlencode({
